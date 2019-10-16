@@ -10,13 +10,13 @@ unit clHttpServer;
 interface
 
 uses
-  System.Classes, System.SysUtils, clTcpServer, clHttpHeader, clHttpUtils, clUtils, clTranslator;
+  System.Classes, System.SysUtils, clTcpServer, clTcpServerTls, clHttpHeader, clHttpUtils, clUtils, clTranslator;
 
 type
   EclHttpServerError = class(EclTcpServerError)
   end;
 
-  TclHttpUserConnection = class(TclUserConnection)
+  TclHttpUserConnection = class(TclUserConnectionTls)
   private
     FRawRequest: TMemoryStream;
     FRequestVersion: TclHttpVersion;
@@ -67,7 +67,7 @@ type
   TclHttpResponseEvent = procedure (Sender: TObject; AConnection: TclHttpUserConnection;
     AStatusCode: Integer; const AStatusText: string; AHeader: TclHttpResponseHeader; ABody: TStream) of object;
 
-  TclHttpServer = class(TclTcpServer)
+  TclHttpServer = class(TclTcpServerTls)
   private
     FOnSendResponse: TclHttpResponseEvent;
     FOnReceiveRequest: TclHttpRequestEvent;
@@ -102,7 +102,8 @@ type
     procedure SendResponseAndClose(AConnection: TclHttpUserConnection;
       AStatusCode: Integer; const AStatusText, ABody: string); overload;
   published
-    property Port default DefaultHttpPort;
+    property Port default 443;
+    property UseTLS default stImplicit;
 
     property HttpVersion: TclHttpVersion read FHttpVersion write FHttpVersion default hvHttp1_1;
     property CharSet: string read FCharSet write FCharSet;
@@ -125,6 +126,9 @@ end;
 constructor TclHttpServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+
+  Port := 443;
+  UseTLS := stImplicit;
 
   FHttpVersion := hvHttp1_1;
   FCharSet := '';
@@ -370,7 +374,7 @@ end;
 
 function TclHttpUserConnection.BuildStatusLine(AStatusCode: Integer; const AStatusText: string): string;
 begin
-  Result := cHttpVersion[ResponseVersion] + ' ' + IntToStr(AStatusCode) + ' ' + AStatusText;
+  Result := HttpVersions[ResponseVersion] + ' ' + IntToStr(AStatusCode) + ' ' + AStatusText;
 end;
 
 procedure TclHttpUserConnection.Clear;
@@ -496,7 +500,7 @@ begin
   FRequestUri := ExtractWord(2, ARequestLine, [' ']);
 
   s := ExtractWord(3, ARequestLine, [' ']);
-  if (cHttpVersion[hvHttp1_1] = s) then
+  if (HttpVersions[hvHttp1_1] = s) then
   begin
     FRequestVersion := hvHttp1_1;
   end else
