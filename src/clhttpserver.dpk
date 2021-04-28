@@ -30,7 +30,42 @@ package clhttpserver;
 
 requires
   rtl,
+{$IFDEF VER230} { Delphi XE2}
+  clinetsuite_xe2;
+{$ENDIF}
+{$IFDEF VER240} { Delphi XE3}
   clinetsuite_xe3;
+{$ENDIF}
+{$IFDEF VER250} { Delphi XE4}
+  clinetsuite_xe4;
+{$ENDIF}
+{$IFDEF VER260} { Delphi XE5}
+  clinetsuite_xe5;
+{$ENDIF}
+{$IFDEF VER270} { Delphi XE6}
+  clinetsuite_xe6;
+{$ENDIF}
+{$IFDEF VER280} { Delphi XE7}
+  clinetsuite_xe7;
+{$ENDIF}
+{$IFDEF VER290} { Delphi XE8}
+  clinetsuite_xe8;
+{$ENDIF}
+{$IFDEF VER300} { Delphi 10 Seattle}
+  clinetsuite_10;
+{$ENDIF}
+{$IFDEF VER310} { Delphi 10.1 Berlin}
+  clinetsuite_101;
+{$ENDIF}
+{$IFDEF VER320} { Delphi 10.2 Tokyo}
+  clinetsuite_102;
+{$ENDIF}
+{$IFDEF VER330} { Delphi 10.3 Rio}
+  clinetsuite_103;
+{$ENDIF}
+{$IFDEF VER340} { Delphi 10.4 Sydney }
+  clinetsuite_104;
+{$ENDIF}
 
 contains
   clHttpServer in 'clHttpServer.pas';
